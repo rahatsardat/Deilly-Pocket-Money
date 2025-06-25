@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Pocket Money</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Global Styles --- */
+        :root {
+            --primary-color: #00bcd4;
+            --secondary-color: #ffc107;
+            --dark-bg: #1a1a2e;
+            --card-bg: #16213e;
+            --text-light: #e0fbfc;
+            --text-dark: #333;
+            --success-color: #4caf50;
+            --danger-color: #f44336;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            overflow-x: hidden;
+        }
+
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        /* --- Signup Page Styles --- */
+        #signup-page {
+            background: linear-gradient(rgba(45, 29, 102, 0.8), rgba(26, 26, 46, 0.9)), url('https://i.imgur.com/kYqR1bA.png');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .signup-form {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .signup-form h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+            text-shadow: 0 0 10px var(--secondary-color);
+        }
+
+        .signup-form p {
+            margin-bottom: 30px;
+            color: var(--text-light);
+        }
+
+        .signup-form input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid var(--primary-color);
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        .signup-form input::placeholder {
+            color: rgba(224, 251, 252, 0.7);
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), #00e5ff);
+            color: var(--text-dark);
+            box-shadow: 0 4px 15px rgba(0, 188, 212, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 188, 212, 0.6);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, var(--secondary-color), #ffd60a);
+            color: var(--text-dark);
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+        }
+        
+        .btn-secondary:hover {
+             transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.6);
+        }
+
+        .btn-back {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            border: 1px solid var(--primary-color);
+            margin-top: 20px;
+        }
+
+        /* --- General Card & Dashboard Styles --- */
+        .card {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0, 188, 212, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+        
+        .page-header .icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        /* --- Dashboard --- */
+        .balance-card {
+            text-align: center;
+            background: linear-gradient(135deg, #1f4068, #16213e);
+        }
+
+        .balance-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+        }
+
+        .balance-card .balance-amount {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 2px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .dashboard-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 188, 212, 0.2);
+        }
+
+        .dashboard-item:hover {
+            background-color: var(--primary-color);
+            color: var(--text-dark);
+            transform: scale(1.05);
+        }
+
+        .dashboard-item .icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        #congrats-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 0 30px var(--secondary-color);
+        }
+        
+        .modal-content h2 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+
+        /* --- Earn Page --- */
+        .task-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 25px;
+            background: linear-gradient(135deg, #16213e, #1f4068);
+        }
+
+        .task-card .task-info h3 {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+        }
+        
+        #task3-info p {
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        /* --- Invite Page --- */
+        .referral-card {
+            text-align: center;
+        }
+
+        .referral-link-box {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px dashed var(--primary-color);
+            margin: 20px 0;
+            word-wrap: break-word;
+            font-size: 1.1rem;
+        }
+        
+        .referral-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-item .count {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        /* --- Level Page --- */
+        .level-card {
+            position: relative;
+            overflow: hidden;
+            padding: 25px;
+        }
+        .level-card.completed {
+            border-color: var(--success-color);
+        }
+        .level-card.locked {
+            opacity: 0.6;
+        }
+        
+        .level-progress {
+            width: 100%;
+            background-color: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            height: 20px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .level-status {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        /* --- Withdraw & Settings Page --- */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .withdraw-conditions {
+            background-color: rgba(255, 193, 7, 0.1);
+            border: 1px solid var(--secondary-color);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .withdraw-conditions ul {
+            list-style-position: inside;
+            padding-left: 10px;
+        }
+        
+        /* --- Payment History --- */
+        .payment-history-section {
+            padding: 40px 20px;
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            margin-top: 40px;
+        }
+        .payment-history-section h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+        }
+        #payment-history-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        #payment-history-table th, #payment-history-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        #payment-history-table th {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- ========= Signup Page ========= -->
+    <div id="signup-page" class="page active">
+        <div class="signup-form">
+            <h1>Daily Pocket Money</h1>
+            <p>শুধু ফোন নম্বর দিয়ে সাইন আপ করে আয় শুরু করুন।</p>
+            <input type="tel" id="phone-number" placeholder="আপনার ফোন নম্বর দিন" required>
+            <button class="btn btn-primary" onclick="handleSignup()">সাইন আপ করুন</button>
+        </div>
+    </div>
+
+    <!-- ========= Dashboard Page ========= -->
+    <div id="dashboard-page" class="page">
+        <div class="container">
+            <div class="card balance-card">
+                <h2>মেইন ব্যালেন্স</h2>
+                <div class="balance-amount">৳ <span id="main-balance">0.00</span></div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-item" onclick="showPage('earn-page')">
+                    <span class="icon">💰</span>
+                    <span>Earn</span>
+                </div>
+                <div class="dashboard-item" onclick="showPage('invite-page')">
+                    <span class="icon">👥</span>
+                    <span>Invite</span>
+                </div>
+                <div class="dashboard-item" onclick="showPage('level-page')">
+                    <span class="icon">🚀</span>
+                    <span>Level</span>
+                </div>
+                <div class="dashboard-item" onclick="showPage('history-page')">
+                    <span class="icon">📈</span>
+                    <span>History</span>
+                </div>
+                <div class="dashboard-item" onclick="showPage('withdraw-page')">
+                    <span class="icon">💳</span>
+                    <span>Withdraw</span>
+                </div>
+                <div class="dashboard-item" onclick="showPage('settings-page')">
+                    <span class="icon">⚙️</span>
+                    <span>Settings</span>
+                </div>
+            </div>
+            
+             <div class="payment-history-section">
+                <h2>সাম্প্রতিক পেমেন্ট</h2>
+                <table id="payment-history-table">
+                    <thead>
+                        <tr>
+                            <th>নাম</th>
+                            <th>পরিমাণ (টাকা)</th>
+                            <th>সময়</th>
+                        </tr>
+                    </thead>
+                    <tbody id="payment-history-body">
+                        <!-- JS generated content -->
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    
+    <!-- Congratulations Modal -->
+    <div id="congrats-modal">
+        <div class="modal-content">
+            <h2>🎉 অভিনন্দন! 🎉</h2>
+            <p>আমাদের সাথে যোগ দেওয়ার জন্য আপনাকে স্বাগতম!</p>
+            <p>আপনার ওয়েলকাম বোনাস দাবি করুন।</p>
+            <button class="btn btn-secondary" onclick="claimWelcomeBonus()">৳ ৫২ টাকা নিন</button>
+        </div>
+    </div>
+
+
+    <!-- ========= Earn Page ========= -->
+    <div id="earn-page" class="page">
+        <div class="container">
+            <h1 class="page-header"><span class="icon">💰</span> টাকা আয় করুন</h1>
+
+            <div class="card task-card">
+                <div class="task-info">
+                    <h3>টাস্ক-১: বিজ্ঞাপন দেখুন</h3>
+                    <p>সম্পূর্ণ বিজ্ঞাপন দেখুন এবং ৩ টাকা আয় করুন।</p>
+                </div>
+                <button class="btn btn-primary" onclick="handleTaskClick(1, 3)">কাজ করুন</button>
+            </div>
+
+            <div class="card task-card">
+                <div class="task-info">
+                    <h3>টাস্ক-২: বিজ্ঞাপন দেখুন</h3>
+                    <p>সম্পূর্ণ বিজ্ঞাপন দেখুন এবং ৩ টাকা আয় করুন।</p>
+                </div>
+                <button class="btn btn-primary" onclick="handleTaskClick(2, 3)">কাজ করুন</button>
+            </div>
+            
+            <div id="task3-info" class="card">
+                <h3>টাস্ক-৩: সাইন-আপ বোনাস</h3>
+                <p>এই ওয়েবসাইটে দেখানো বিভিন্ন বিজ্ঞাপনে ক্লিক করে যদি কোনো ওয়েবসাইটে সঠিকভাবে সাইন-আপ করেন, তাহলে প্রতিটি সফল সাইন-আপের জন্য আপনি <strong>১৫ টাকা</strong> করে বোনাস পাবেন।</p>
+                <p><strong>শর্ত:</strong> সাইন-আপ করার সময় অবশ্যই সঠিক ফোন নম্বর এবং ইমেইল ব্যবহার করতে হবে। সাইন-আপ সম্পূর্ণ না হলে বোনাস যোগ হবে না। আমাদের সিস্টেম স্বয়ংক্রিয়ভাবে এটি যাচাই করবে।</p>
+            </div>
+
+            <button class="btn btn-back" onclick="showPage('dashboard-page')">ড্যাশবোর্ডে ফিরে যান</button>
+        </div>
+    </div>
+    
+    <!-- ========= Invite Page ========= -->
+    <div id="invite-page" class="page">
+        <div class="container">
+            <h1 class="page-header"><span class="icon">👥</span> ইনভাইট ও রেফার</h1>
+            
+            <div class="card referral-card">
+                <h3>আপনার রেফারেল লিঙ্ক</h3>
+                <p>এই লিঙ্কটি আপনার বন্ধুদের সাথে শেয়ার করুন। প্রতি সফল রেফারে ৩০ টাকা বোনাস!</p>
+                <div id="referral-link" class="referral-link-box">আপনার লিঙ্ক এখানে জেনারেট হবে...</div>
+                <button class="btn btn-secondary" onclick="copyReferralLink()">লিঙ্ক কপি করুন</button>
+                
+                <div class="referral-stats">
+                    <div class="stat-item">
+                        <div id="referral-count" class="count">0</div>
+                        <div>মোট রেফারেল</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="count">৳ <span id="referral-earnings">0</span></div>
+                        <div>রেফারেল থেকে আয়</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-back" onclick="showPage('dashboard-page')">ড্যাশবোর্ডে ফিরে যান</button>
+        </div>
+    </div>
+    
+    <!-- ========= Level Page ========= -->
+    <div id="level-page" class="page">
+        <div class="container">
+            <h1 class="page-header"><span class="icon">🚀</span> লেভেল আপ</h1>
+            <div id="levels-container">
+                <!-- Levels will be generated by JS -->
+            </div>
+            <button class="btn btn-back" onclick="showPage('dashboard-page')">ড্যাশবোর্ডে ফিরে যান</button>
+        </div>
+    </div>
+
+    <!-- ========= History Page ========= -->
+    <div id="history-page" class="page">
+         <div class="container">
+            <h1 class="page-header"><span class="icon">📈</span> আয়ের ইতিহাস</h1>
+            
+             <div class="card">
+                <h3>আপনার আয়ের সারসংক্ষেপ</h3>
+                <div class="referral-stats">
+                    <div class="stat-item">
+                        <div class="count">৳ <span id="daily-income">0.00</span></div>
+                        <div>আজকের আয়</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="count">৳ <span id="weekly-income">0.00</span></div>
+                        <div>এই সপ্তাহের আয়</div>
+                    </div>
+                     <div class="stat-item">
+                        <div class="count">৳ <span id="monthly-income">0.00</span></div>
+                        <div>এই মাসের আয়</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-back" onclick="showPage('dashboard-page')">ড্যাশবোর্ডে ফিরে যান</button>
+        </div>
+    </div>
+
+    <!-- ========= Withdraw Page ========= -->
+    <div id="withdraw-page" class="page">
+        <div class="container">
+            <h1 class="page-header"><span class="icon">💳</span> টাকা তুলুন</h1>
+            
+            <div class="card">
+                <h3>উইথড্র করার নিয়মাবলী</h3>
+                <div class="withdraw-conditions">
+                    <p>টাকা তোলার জন্য নিচের শর্তগুলো অবশ্যই পূরণ করতে হবে:</p>
+                    <ul>
+                        <li>সর্বনিম্ন উইথড্র পরিমাণ: <strong>৳ ৩০০০ টাকা</strong></li>
+                        <li>সর্বনিম্ন রেফারেল সংখ্যা: <strong>২৫ জন</strong></li>
+                    </ul>
+                    <p id="withdraw-status" style="margin-top: 10px; font-weight: bold;"></p>
+                </div>
+
+                <form id="withdraw-form" onsubmit="event.preventDefault(); handleWithdraw();">
+                    <div class="form-group">
+                        <label for="payment-method">পেমেন্ট মাধ্যম</label>
+                        <select id="payment-method">
+                            <option value="bkash">বিকাশ</option>
+                            <option value="nagad">নগদ</option>
+                        </select>
+                    </div>
+                     <div class="form-group">
+                        <label for="account-number">অ্যাকাউন্ট নম্বর</label>
+                        <input type="text" id="account-number" placeholder="আপনার বিকাশ/নগদ নম্বর দিন" required>
+                    </div>
+                     <div class="form-group">
+                        <label for="withdraw-amount">টাকার পরিমাণ</label>
+                        <input type="number" id="withdraw-amount" placeholder="3000" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">উইথড্র রিকোয়েস্ট পাঠান</button>
+                </form>
+            </div>
+
+            <button class="btn btn-back" onclick="showPage('dashboard-page')">ড্যাশবোর্ডে ফিরে যান</button>
+        </div>
+    </div>
+    
+    <!-- ========= Settings Page ========= -->
+    <div id="settings-page" class="page">
+        <div class="container">
+            <h1 class="page-header"><span class="icon">⚙️</span> প্রোফাইল সেটিংস</h1>
+            
+            <div class="card">
+                <h3>আপনার তথ্য পরিবর্তন করুন</h3>
+                <form id="settings-form" onsubmit="event.preventDefault(); updateSettings();">
+                    <div class="form-group">
+                        <label for="settings-phone">ফোন নম্বর</label>
+                        <input type="tel" id="settings-phone" readonly>
+                    </div>
+                     <div class="form-group">
+                        <label for="settings-password">নতুন পাসওয়ার্ড সেট করুন (ঐচ্ছিক)</label>
+                        <input type="password" id="settings-password" placeholder="নতুন পাসওয়ার্ড দিন">
+                    </div>
+                    <button type="submit" class="btn btn-primary">তথ্য সেভ করুন</button>
+                </form>
+            </div>
+
+            <button class="btn btn-back" onclick="showPage('dashboard-page')">ড্যাশবোর্ডে ফিরে যান</button>
+        </div>
+    </div>
+
+    <!-- Adsterra Social Bar Ad -->
+    <script type='text/javascript' src='//amuletshaped.com/b8/20/47/b82047769b44808f5e3426d3821258f1.js'></script>
+    
+    <script>
+    // --- Configuration ---
+    const adLinks = {
+        task1: "https://amuletshaped.com/xmy5jz0v?key=4bff42bbba1a2dd0e034d406ae638704",
+        task2: "https://otieu.com/4/9156891"
+    };
+
+    const levelData = [
+        { id: 1, referrals: 3, bonus: 20 },
+        { id: 2, referrals: 5, bonus: 30 },
+        { id: 3, referrals: 7, bonus: 45 },
+        { id: 4, referrals: 10, bonus: 66 },
+        { id: 5, referrals: 14, bonus: 97 },
+        { id: 6, referrals: 22, bonus: 250 }
+    ];
+
+    const WITHDRAW_MIN_BALANCE = 3000;
+    const WITHDRAW_MIN_REFERRALS = 25;
+
+    // --- State Management ---
+    let currentUser = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const userData = localStorage.getItem('dailyPocketMoneyUser');
+        if (userData) {
+            currentUser = JSON.parse(userData);
+            showPage('dashboard-page');
+            updateAllUI();
+        } else {
+            showPage('signup-page');
+        }
+        generateFakePaymentHistory();
+        setInterval(generateFakePaymentHistory, 3600 * 1000); // Update every hour
+    });
+
+    function saveUser() {
+        localStorage.setItem('dailyPocketMoneyUser', JSON.stringify(currentUser));
+    }
+
+    // --- Page Navigation ---
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(page => {
+            page.classList.remove('active');
+        });
+        document.getElementById(pageId).classList.add('active');
+    }
+
+    // --- Signup Logic ---
+    function handleSignup() {
+        const phone = document.getElementById('phone-number').value.trim();
+        if (phone.length < 11 || !/^\d+$/.test(phone)) {
+            alert('অনুগ্রহ করে একটি সঠিক ১১ সংখ্যার ফোন নম্বর দিন।');
+            return;
+        }
+
+        currentUser = {
+            phone: phone,
+            balance: 0,
+            referralCount: 0,
+            referralCode: 'DPM' + Math.random().toString(36).substr(2, 8).toUpperCase(),
+            level: 1,
+            claimedWelcomeBonus: false,
+            claimedLevelBonuses: [],
+            tasksCompleted: {},
+            transactions: []
+        };
+        
+        saveUser();
+        showPage('dashboard-page');
+        updateAllUI();
+        
+        document.getElementById('congrats-modal').style.display = 'flex';
+    }
+    
+    // --- Dashboard & Bonus Logic ---
+    function claimWelcomeBonus() {
+        if (currentUser && !currentUser.claimedWelcomeBonus) {
+            addTransaction(52, 'Welcome Bonus');
+            currentUser.claimedWelcomeBonus = true;
+            saveUser();
+            updateAllUI();
+            document.getElementById('congrats-modal').style.display = 'none';
+            alert('অভিনন্দন! আপনার অ্যাকাউন্টে ৫২ টাকা যোগ হয়েছে।');
+        }
+    }
+
+    // --- Task Logic ---
+    function handleTaskClick(taskNumber, reward) {
+        const today = new Date().toISOString().split('T')[0];
+        const taskKey = `task${taskNumber}_${today}`;
+
+        if (currentUser.tasksCompleted[taskKey]) {
+            alert('আপনি আজকের জন্য এই কাজটি ইতিমধ্যে সম্পন্ন করেছেন।');
+            return;
+        }
+
+        const adLink = taskNumber === 1 ? adLinks.task1 : adLinks.task2;
+        window.open(adLink, '_blank');
+        
+        addTransaction(reward, `Task ${taskNumber}`);
+        currentUser.tasksCompleted[taskKey] = true;
+        saveUser();
+        updateAllUI();
+        
+        alert(`অভিনন্দন! টাস্ক-${taskNumber} সম্পন্ন করার জন্য আপনি ${reward} টাকা পেয়েছেন।`);
+    }
+
+    // --- Invite Logic ---
+    function updateInvitePage() {
+        if (!currentUser) return;
+        const referralLink = `${window.location.origin}${window.location.pathname}?ref=${currentUser.referralCode}`;
+        document.getElementById('referral-link').textContent = referralLink;
+        document.getElementById('referral-count').textContent = currentUser.referralCount;
+        document.getElementById('referral-earnings').textContent = (currentUser.referralCount * 30).toFixed(2);
+    }
+    
+    function copyReferralLink() {
+        const link = document.getElementById('referral-link').textContent;
+        navigator.clipboard.writeText(link).then(() => {
+            alert('রেফারেল লিঙ্ক কপি করা হয়েছে!');
+        }, () => {
+            alert('লিঙ্ক কপি করতে সমস্যা হয়েছে।');
+        });
+    }
+
+    // --- Level Logic ---
+    function updateLevelPage() {
+        const container = document.getElementById('levels-container');
+        container.innerHTML = '';
+        
+        levelData.forEach((level, index) => {
+            const prevLevelRefs = index > 0 ? levelData[index - 1].referrals : 0;
+            const refsForThisLevel = level.referrals - prevLevelRefs;
+            const isCompleted = currentUser.level > level.id;
+            const isCurrent = currentUser.level === level.id;
+            const isLocked = currentUser.level < level.id;
+            
+            let progressRefs = 0;
+            if (isCurrent) {
+                progressRefs = currentUser.referralCount - prevLevelRefs;
+            } else if (isCompleted) {
+                progressRefs = refsForThisLevel;
+            }
+            
+            const progressPercent = (progressRefs / refsForThisLevel) * 100;
+
+            const levelCard = `
+                <div class="card level-card ${isCompleted ? 'completed' : ''} ${isLocked ? 'locked' : ''}">
+                    <h3>লেভেল ${level.id} ${isCompleted ? '(সম্পন্ন)' : ''}</h3>
+                    <p>বোনাস: ৳ ${level.bonus} | প্রয়োজন: ${refsForThisLevel} টি রেফারেল</p>
+                    <div class="level-progress">
+                        <div class="progress-bar" style="width: ${progressPercent}%"></div>
+                    </div>
+                    <div class="level-status">
+                       ${isCurrent ? `${progressRefs} / ${refsForThisLevel} রেফারেল সম্পন্ন` : (isCompleted ? `সম্পন্ন!` : 'লক করা')}
+                    </div>
+                </div>
+            `;
+            container.innerHTML += levelCard;
+        });
+    }
+    
+    function checkLevelUp() {
+        const currentLevelInfo = levelData.find(l => l.id === currentUser.level);
+        if (currentLevelInfo && currentUser.referralCount >= currentLevelInfo.referrals) {
+            if (!currentUser.claimedLevelBonuses.includes(currentLevelInfo.id)) {
+                addTransaction(currentLevelInfo.bonus, `Level ${currentLevelInfo.id} Bonus`);
+                currentUser.claimedLevelBonuses.push(currentLevelInfo.id);
+                currentUser.level += 1;
+                saveUser();
+                alert(`অভিনন্দন! আপনি লেভেল ${currentLevelInfo.id} সম্পন্ন করেছেন এবং ${currentLevelInfo.bonus} টাকা বোনাস পেয়েছেন!`);
+                updateAllUI();
+            }
+        }
+    }
+
+    // --- History Logic ---
+    function updateHistoryPage() {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - today.getDay());
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+        let daily = 0, weekly = 0, monthly = 0;
+        
+        currentUser.transactions.forEach(t => {
+            const txDate = new Date(t.timestamp);
+            if (txDate >= today) daily += t.amount;
+            if (txDate >= weekStart) weekly += t.amount;
+            if (txDate >= monthStart) monthly += t.amount;
+        });
+
+        document.getElementById('daily-income').textContent = daily.toFixed(2);
+        document.getElementById('weekly-income').textContent = weekly.toFixed(2);
+        document.getElementById('monthly-income').textContent = monthly.toFixed(2);
+    }
+    
+    // --- Withdraw Logic ---
+    function updateWithdrawPage() {
+        const balanceOk = currentUser.balance >= WITHDRAW_MIN_BALANCE;
+        const referralsOk = currentUser.referralCount >= WITHDRAW_MIN_REFERRALS;
+        const statusEl = document.getElementById('withdraw-status');
+        
+        let statusText = `আপনার বর্তমান অবস্থা: ব্যালেন্স ৳ ${currentUser.balance.toFixed(2)} | রেফারেল: ${currentUser.referralCount} জন`;
+        statusEl.textContent = statusText;
+        
+        if(balanceOk && referralsOk) {
+            statusEl.style.color = 'var(--success-color)';
+        } else {
+             statusEl.style.color = 'var(--danger-color)';
+        }
+
+        document.getElementById('withdraw-form').querySelector('button').disabled = !(balanceOk && referralsOk);
+    }
+
+    function handleWithdraw() {
+        const amount = parseFloat(document.getElementById('withdraw-amount').value);
+        if (isNaN(amount) || amount <= 0) {
+            alert('সঠিক পরিমাণ টাকা লিখুন।');
+            return;
+        }
+        if (amount < WITHDRAW_MIN_BALANCE) {
+             alert(`সর্বনিম্ন উইথড্র পরিমাণ ${WITHDRAW_MIN_BALANCE} টাকা।`);
+            return;
+        }
+        if (amount > currentUser.balance) {
+            alert('আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই।');
+            return;
+        }
+        
+        alert('আপনার উইথড্র রিকোয়েস্ট গ্রহণ করা হয়েছে। ২৪-৪৮ ঘন্টার মধ্যে পেমেন্ট করা হবে। (এটি একটি ডেমো, কোনো টাকা পাঠানো হবে না)');
+    }
+
+    // --- Settings Logic ---
+    function updateSettingsPage() {
+        document.getElementById('settings-phone').value = currentUser.phone;
+    }
+
+    function updateSettings() {
+        const newPassword = document.getElementById('settings-password').value;
+        if (newPassword && newPassword.length < 4) {
+            alert('পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে।');
+            return;
+        }
+        if (newPassword) {
+            currentUser.password = newPassword; // Note: In a real app, hash this!
+            alert('আপনার পাসওয়ার্ড সফলভাবে সেট করা হয়েছে।');
+        }
+        saveUser();
+        alert('আপনার তথ্য সেভ করা হয়েছে।');
+        document.getElementById('settings-password').value = '';
+    }
+
+    // --- Utility Functions ---
+    function addTransaction(amount, type) {
+        currentUser.balance += amount;
+        currentUser.transactions.push({
+            amount: amount,
+            type: type,
+            timestamp: new Date().toISOString()
+        });
+    }
+
+    function updateAllUI() {
+        if (!currentUser) return;
+        document.getElementById('main-balance').textContent = currentUser.balance.toFixed(2);
+        updateInvitePage();
+        updateLevelPage();
+        checkLevelUp();
+        updateHistoryPage();
+        updateWithdrawPage();
+        updateSettingsPage();
+    }
+    
+    function generateFakePaymentHistory() {
+        const container = document.getElementById('payment-history-body');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        const names = ["রহিম", "করিম", "আকাশ", "সোহেল", "নাহিদ", "রাব্বি", "জিসান", "ফাহিম", "হাসান", "ইমন"];
+        const count = 10;
+        
+        for(let i=0; i < count; i++) {
+            const name = names[Math.floor(Math.random() * names.length)];
+            const amount = (Math.random() * 2000 + 3000).toFixed(2);
+            const timeAgo = Math.floor(Math.random() * 59) + 1;
+            
+            const row = `
+                <tr>
+                    <td>${name} M.</td>
+                    <td>৳ ${amount}</td>
+                    <td>${timeAgo} মিনিট আগে</td>
+                </tr>
+            `;
+            container.innerHTML += row;
+        }
+    }
+    
+    // Check for referral on page load
+    const urlParams = new URLSearchParams(window.location.search);
+    const refCode = urlParams.get('ref');
+    if (refCode) {
+        console.log("Referred by:", refCode);
+    }
+    
+    </script>
+</body>
+</html>
