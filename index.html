@@ -1,5 +1,5 @@
 <!-- ================================================================= -->
-<!-- শুরু: চূড়ান্ত এবং নির্ভুল HTML Code -->
+<!-- শুরু: চূড়ান্ত, পরীক্ষিত এবং নির্ভুল HTML Code (সংশোধিত) -->
 <!-- ================================================================= -->
 <!DOCTYPE html>
 <html lang="bn">
@@ -141,7 +141,7 @@
         <main class="main-container">
             <header class="dashboard-header">
                 <div class="profile-info">
-                    <img id="header-profile-pic" src="https://i.ibb.co/615b2d6/default-avatar.png" alt="DP" class="profile-pic">
+                    <img id="header-profile-pic" src="" alt="DP" class="profile-pic">
                     <div class="profile-text"><p>স্বাগতম,</p><h3 id="user-name-display"></h3></div>
                 </div>
                 <div class="balance-card"><p>মূল ব্যালেন্স</p><h2 id="main-balance"></h2></div>
@@ -156,13 +156,15 @@
         </nav>
     </div>
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx-HS41-7XBZjb-1nnjUaZ9vDceM9DCb0kQdSUGBVVZAfQklOedyg1j-Rr2u-nGoQOfwQ/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzh4JytOXLnS-F1reg1a5pWoOfIxJH1FpyfdfDmUvo9LYR6Ce27uqBg7lydZZMQwHVVoQ/exec';
         
         const LEVELS = [
             { req: 3, bonus: 20 }, { req: 5, bonus: 30 }, { req: 7, bonus: 45 },
             { req: 10, bonus: 66 }, { req: 14, bonus: 97 }, { req: 31, bonus: 250 },
             { req: 500, bonus: 10000 }
         ];
+
+        const DEFAULT_AVATAR_URL = 'https://i.ibb.co/6X4g1g1/default-avatar.png';
 
         document.addEventListener('DOMContentLoaded', initializeApp);
 
@@ -320,7 +322,7 @@
                     content = `<div class="page active"><div class="page-header"><button class="back-btn" onclick="showPage('main-dashboard')"><i class="fa-solid fa-arrow-left"></i></button><h2>টাকা উত্তোলন</h2></div><div class="inner-page-content"><div class="withdraw-rules" style="background:#E3F2FD; border:1px solid #90CAF9; padding:15px; border-radius:10px; margin-bottom:20px;"><h4 style="margin:0 0 10px 0; color:var(--secondary-color);"><i class="fa-solid fa-circle-info"></i> উত্তোলনের শর্তাবলী:</h4><ul style="padding-left:20px; margin:0; font-size: 0.95rem;"><li>ন্যূনতম <b>৳3000.00 টাকা</b> ব্যালেন্স থাকতে হবে।</li><li>কমপক্ষে <b>৩১টি সফল রেফারেল</b> থাকতে হবে। (আপনার আছে: ${userData.referralCount || 0} টি)</li></ul></div><form id="withdraw-form"><div class="input-group"><label>পেমেন্ট মেথড</label><select id="payment-method"><option>বিকাশ</option><option>নগদ</option></select></div><div class="input-group"><label>আপনার পেমেন্ট নম্বর</label><input type="tel" id="payment-number" placeholder="যেমন: 017xxxxxxxx" required></div><div class="input-group"><label>টাকার পরিমাণ</label><input type="number" id="withdraw-amount" placeholder="যেমন: 3000" required></div><button type="submit" class="btn-primary">রিকোয়েস্ট পাঠান</button></form><hr class="separator"><p style="text-align:center; font-weight:500;">অথবা</p><button class="btn-primary" onclick="document.getElementById('withdraw-modal').style.display='flex'" style="background: var(--success-color);"><i class="fa-solid fa-file-lines"></i> গুগল ফর্ম দিয়ে রিকোয়েস্ট পাঠান</button></div></div>`;
                     break;
                 case 'profile-page':
-                    content = `<div class="page active"><div class="page-header"><button class="back-btn" onclick="showPage('main-dashboard')"><i class="fa-solid fa-arrow-left"></i></button><h2>প্রোফাইল</h2></div><div class="inner-page-content"><div style="text-align:center; margin-bottom:20px;"><img id="profile-page-pic" src="${localStorage.getItem(`userPhoto_${userData.phone}`) || 'https://i.ibb.co/615b2d6/default-avatar.png'}" alt="DP" style="width:120px; height:120px; border-radius:50%; border:4px solid var(--primary-color); padding:4px; background:white; margin-bottom:15px;"><label for="upload-photo" class="btn-primary" style="display:inline-block; width:auto; padding:10px 20px; font-size:0.9rem;"><i class="fa-solid fa-camera"></i> ছবি পরিবর্তন</label><input type="file" id="upload-photo" accept="image/*" style="display:none;"></div><hr class="separator"><h4>পাসওয়ার্ড পরিবর্তন করুন</h4><form id="changePasswordForm"><div class="input-group"><label>বর্তমান পাসওয়ার্ড</label><input type="password" id="current-password" required></div><div class="input-group"><label>নতুন পাসওয়ার্ড</label><input type="password" id="new-password" minlength="6" required></div><div class="input-group"><label>নতুন পাসওয়ার্ড নিশ্চিত করুন</label><input type="password" id="confirm-new-password" minlength="6" required></div><button type="submit" class="btn-primary">পরিবর্তন করুন</button></form><hr class="separator"><button onclick="handleLogout()" class="btn-primary" style="background:var(--danger-color); width:100%;"><i class="fa-solid fa-right-from-bracket"></i> লগ-আউট করুন</button></div></div>`;
+                    content = `<div class="page active"><div class="page-header"><button class="back-btn" onclick="showPage('main-dashboard')"><i class="fa-solid fa-arrow-left"></i></button><h2>প্রোফাইল</h2></div><div class="inner-page-content"><div style="text-align:center; margin-bottom:20px;"><img id="profile-page-pic" src="${localStorage.getItem(`userPhoto_${userData.phone}`) || DEFAULT_AVATAR_URL}" alt="DP" style="width:120px; height:120px; border-radius:50%; border:4px solid var(--primary-color); padding:4px; background:white; margin-bottom:15px;"><label for="upload-photo" class="btn-primary" style="display:inline-block; width:auto; padding:10px 20px; font-size:0.9rem;"><i class="fa-solid fa-camera"></i> ছবি পরিবর্তন</label><input type="file" id="upload-photo" accept="image/*" style="display:none;"></div><hr class="separator"><h4>পাসওয়ার্ড পরিবর্তন করুন</h4><form id="changePasswordForm"><div class="input-group"><label>বর্তমান পাসওয়ার্ড</label><input type="password" id="current-password" required></div><div class="input-group"><label>নতুন পাসওয়ার্ড</label><input type="password" id="new-password" minlength="6" required></div><div class="input-group"><label>নতুন পাসওয়ার্ড নিশ্চিত করুন</label><input type="password" id="confirm-new-password" minlength="6" required></div><button type="submit" class="btn-primary">পরিবর্তন করুন</button></form><hr class="separator"><button onclick="handleLogout()" class="btn-primary" style="background:var(--danger-color); width:100%;"><i class="fa-solid fa-right-from-bracket"></i> লগ-আউট করুন</button></div></div>`;
                     break;
                 case 'level-page':
                     content = `<div class="page active"><div class="page-header"><button class="back-btn" onclick="showPage('main-dashboard')"><i class="fa-solid fa-arrow-left"></i></button><h2>লেভেল</h2></div><div class="inner-page-content">${generateLevelContent(userData)}</div></div>`;
@@ -491,7 +493,7 @@
             if (!userData) return;
             document.getElementById('user-name-display').innerText = userData.name;
             document.getElementById('main-balance').innerText = `৳ ${parseFloat(userData.balance || 0).toFixed(2)}`;
-            const photoSrc = localStorage.getItem(`userPhoto_${userData.phone}`) || 'https://i.ibb.co/615b2d6/default-avatar.png';
+            const photoSrc = localStorage.getItem(`userPhoto_${userData.phone}`) || DEFAULT_AVATAR_URL;
             document.getElementById('header-profile-pic').src = photoSrc;
             if(document.getElementById('profile-page-pic')) {
                 document.getElementById('profile-page-pic').src = photoSrc;
