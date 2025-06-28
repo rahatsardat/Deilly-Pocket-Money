@@ -1,6 +1,3 @@
-<!-- ================================================================= -->
-<!-- শুরু: চূড়ান্ত, পরীক্ষিত এবং নির্ভুল HTML Code (সংশোধিত) -->
-<!-- ================================================================= -->
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -39,7 +36,7 @@
         .balance-card:hover { transform: translateY(-5px); }
         .balance-card p { margin: 0; font-size: 1rem; opacity: 0.9; }
         .balance-card h2 { margin: 5px 0 0; font-size: 2.2rem; font-weight: 700; }
-        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 18px; }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 18px; margin-bottom: 30px; }
         .menu-item { background: var(--white-color); padding: 20px; border-radius: var(--border-radius); text-align: center; box-shadow: var(--shadow); cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s; }
         .menu-item:hover { transform: translateY(-8px); box-shadow: 0 10px 25px rgba(94, 53, 177, 0.2); }
         .menu-item i { font-size: 2.2rem; margin-bottom: 12px; color: var(--primary-color); }
@@ -74,7 +71,6 @@
         .task-button { display: flex; justify-content: space-between; align-items: center; background: #F1F8E9; padding: 20px; border-radius: 12px; margin-bottom: 15px; text-decoration: none; color: var(--text-color); font-weight: 600; cursor: pointer; transition: all 0.2s ease; border: 1px solid #DCEDC8; }
         .task-button:hover { transform: scale(1.03); box-shadow: 0 6px 15px rgba(0,0,0,0.1); border-color: var(--success-color); }
         .task-button .reward { font-weight: 700; color: var(--success-color); font-size: 1.1rem; }
-        .special-task { background: linear-gradient(135deg, #FFF8E1, #FFECB3); border-color: #FFE082; }
         .referral-info-box { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; text-align: center; padding: 30px 20px; border-radius: var(--border-radius); margin-bottom: 25px; box-shadow: 0 8px 25px rgba(94, 53, 177, 0.3); }
         .referral-info-box h2 { font-size: 3rem; margin: 10px 0; font-weight: 700; }
         .referral-stats { display: flex; justify-content: space-around; margin-top: 20px; }
@@ -83,9 +79,6 @@
         .stat-item p { margin: 0; font-size: 0.9rem; opacity: 0.9; }
         .referral-id-box { background: #f5f5f5; padding: 15px; border-radius: 10px; margin-top: 25px; }
         .referral-id-box input { background: transparent; border: none; text-align: center; font-weight: 600; font-size: 1.1rem; color: var(--primary-color); }
-        .banner-ad-container { margin: 30px 0 10px 0; padding: 20px; background: #fff; text-align: center; border-radius: var(--border-radius); box-shadow: var(--shadow); border: 1px solid #eee; }
-        .banner-ad-note { margin-top: 15px; padding: 10px; background-color: #FFF9C4; border-radius: 8px; font-weight: 600; color: #795548; }
-        .banner-ad-note i { color: #F57F17; }
         .level-card { background: #f9f9f9; border: 1px solid #eee; padding: 15px; border-radius: 10px; margin-bottom: 15px; }
         .level-card.completed { background: #E8F8E9; border-color: #C8E6C9; }
         .progress-bar { background: #e0e0e0; border-radius: 10px; margin-top: 8px; overflow: hidden; height: 10px; }
@@ -97,6 +90,7 @@
     </style>
 </head>
 <body>
+
     <div id="signup-view" class="view-container auth-view">
         <div class="auth-form-container">
             <div class="auth-form">
@@ -112,6 +106,7 @@
             </div>
         </div>
     </div>
+
     <div id="login-view" class="view-container auth-view">
         <div class="auth-form-container">
             <div class="auth-form">
@@ -126,8 +121,8 @@
             </div>
         </div>
     </div>
+
     <div id="dashboard-view" class="view-container">
-        <div id="task-modal" class="modal-overlay"></div>
         <div id="withdraw-modal" class="modal-overlay">
             <div class="modal-content">
                 <button class="close-modal-btn" onclick="document.getElementById('withdraw-modal').style.display='none'">×</button>
@@ -138,16 +133,18 @@
                 </div>
             </div>
         </div>
+
         <main class="main-container">
             <header class="dashboard-header">
                 <div class="profile-info">
-                    <img id="header-profile-pic" src="" alt="DP" class="profile-pic">
+                    <img id="header-profile-pic" src="https://i.ibb.co/615b2d6/default-avatar.png" alt="DP" class="profile-pic">
                     <div class="profile-text"><p>স্বাগতম,</p><h3 id="user-name-display"></h3></div>
                 </div>
                 <div class="balance-card"><p>মূল ব্যালেন্স</p><h2 id="main-balance"></h2></div>
             </header>
             <div id="page-container"></div>
         </main>
+
         <nav class="bottom-nav">
             <a href="#" class="nav-link active" data-page="main-dashboard"><i class="fa-solid fa-house"></i><span>হোম</span></a>
             <a href="#" class="nav-link" data-page="earn-page"><i class="fa-solid fa-sack-dollar"></i><span>আয় করুন</span></a>
@@ -155,16 +152,16 @@
             <a href="#" class="nav-link" data-page="profile-page"><i class="fa-solid fa-user"></i><span>প্রোফাইল</span></a>
         </nav>
     </div>
+
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzh4JytOXLnS-F1reg1a5pWoOfIxJH1FpyfdfDmUvo9LYR6Ce27uqBg7lydZZMQwHVVoQ/exec';
+        // <<<--- আপনার নতুন Web App URL টি এখানে যুক্ত করা হয়েছে ---<<<
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwrYegZBt7BTkBGCELK2l17Ljk0NbL-L1NUkiAiSQOg-fif2E9ZXKR9mFgskU3h0KqRzA/exec';
         
         const LEVELS = [
             { req: 3, bonus: 20 }, { req: 5, bonus: 30 }, { req: 7, bonus: 45 },
             { req: 10, bonus: 66 }, { req: 14, bonus: 97 }, { req: 31, bonus: 250 },
             { req: 500, bonus: 10000 }
         ];
-
-        const DEFAULT_AVATAR_URL = 'https://i.ibb.co/6X4g1g1/default-avatar.png';
 
         document.addEventListener('DOMContentLoaded', initializeApp);
 
@@ -175,20 +172,21 @@
                 button.textContent = 'লোড হচ্ছে...';
             }
             try {
-                if (!SCRIPT_URL.startsWith('https://script.google.com')) {
-                    alert('ত্রুটি: Apps Script URL সেট করা হয়নি।');
-                    return { status: 'error', message: 'Script URL not set' };
-                }
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
                     mode: 'cors',
                     body: JSON.stringify({ action, payload })
                 });
+
+                if (!response.ok) {
+                    throw new Error(`সার্ভার থেকে সাড়া পাওয়া যায়নি। Status: ${response.status}`);
+                }
+
                 return await response.json();
             } catch (error) {
                 console.error('API Call Error:', error);
-                alert('সার্ভারের সাথে সংযোগে সমস্যা হয়েছে। অনুগ্রহ করে ইন্টারনেট কানেকশন চেক করে আবার চেষ্টা করুন।');
-                return { status: 'error', message: 'Client-side fetch error' };
+                alert('সার্ভারের সাথে সংযোগে সমস্যা হয়েছে। অনুগ্রহ করে ইন্টারনেট কানেকশন ও Apps Script Deployment চেক করে আবার চেষ্টা করুন।');
+                return { status: 'error', message: 'Client-side fetch error: ' + error.message };
             } finally {
                 if (button && button.dataset.originalText) {
                     button.disabled = false;
@@ -219,7 +217,9 @@
             if (response.status === 'success' && response.userData) {
                 sessionStorage.setItem('userData', JSON.stringify(response.userData));
                 updateAllDisplays(response.userData);
-            } else { console.error("Failed to refresh user data.", response.message); }
+            } else { 
+                console.error("Failed to refresh user data.", response.message);
+            }
         }
         
         function showView(viewName) {
@@ -264,16 +264,22 @@
             const password = document.getElementById('signup-password').value;
             if (password !== document.getElementById('signup-confirm-password').value) { alert('দুটি পাসওয়ার্ড মেলেনি।'); return; }
             const referrerId = sessionStorage.getItem('referralId');
+            
             const response = await apiCall('register', { name, phone, password, referrerId }, button);
+
             if (response.status === 'success' && response.userData) {
                 sessionStorage.setItem('loggedInUser', response.userData.phone);
                 sessionStorage.setItem('userData', JSON.stringify(response.userData));
                 sessionStorage.setItem('isNewUser', 'true');
-                window.history.pushState({}, document.title, window.location.pathname);
+                window.history.pushState({}, document.title, window.location.pathname); 
                 alert(response.message);
-                if (referrerId) { alert(`আপনি একটি রেফারেলে জয়েন করেছেন। আপনার রেফারার ৳৫০ বোনাস পেয়েছেন!`); }
+                if (referrerId) { 
+                    alert(`আপনি একটি রেফারেলে জয়েন করেছেন। আপনার রেফারার ৳৫০ বোনাস পেয়েছেন!`); 
+                }
                 initializeApp();
-            } else { alert(response.message || 'একটি সমস্যা হয়েছে, আবার চেষ্টা করুন।'); }
+            } else { 
+                alert(response.message || 'একটি সমস্যা হয়েছে, আবার চেষ্টা করুন।'); 
+            }
         }
 
         async function handleLogin(event) {
@@ -287,13 +293,14 @@
                 sessionStorage.setItem('loggedInUser', response.userData.phone);
                 sessionStorage.setItem('userData', JSON.stringify(response.userData));
                 initializeApp();
-            } else { alert(response.message || 'একটি সমস্যা হয়েছে, আবার চেষ্টা করুন।'); }
+            } else { 
+                alert(response.message || 'একটি সমস্যা হয়েছে, আবার চেষ্টা করুন।'); 
+            }
         }
         
         function setupDashboard() {
             const userData = JSON.parse(sessionStorage.getItem('userData'));
             if (!userData) { handleLogout(); return; }
-            document.getElementById('task-modal').innerHTML = `<div class="modal-content"><button class="close-modal-btn" onclick="document.getElementById('task-modal').style.display='none'">×</button><h2><i class="fas fa-star" style="color:#f59e0b;"></i> বিশেষ টাস্কের নিয়মাবলী</h2><p style="text-align:left; margin-top:20px;">এই ওয়েবসাইটে দেখানো বিভিন্ন বিজ্ঞাপনে ক্লিক করে যদি কোনো ওয়েবসাইটে সাইন-আপ করেন এবং সেই সাইন-আপটি যদি সফলভাবে সম্পন্ন হয়, তবে আপনি প্রতি সফল সাইন-আপের জন্য <b>৳২০ টাকা</b> বোনাস পাবেন।</p><p style="text-align:left; font-size:0.9rem; color: #888;"><b>শর্ত:</b> সাইন-আপ করার সময় সঠিক তথ্য ব্যবহার করতে হবে।<br><b>যাচাইকরণ:</b> আপনার সাইন-আপটি আমাদের সিস্টেম দ্বারা যাচাই করা হবে। সফল হলে বোনাস যোগ হবে।</p><button class="btn-primary" onclick="handleSpecialSignup()">আমি একটি সাইন-আপ সম্পন্ন করেছি</button></div>`;
             updateAllDisplays(userData);
             showPage('main-dashboard');
             if (sessionStorage.getItem('isNewUser') === 'true') {
@@ -307,22 +314,25 @@
             const userData = JSON.parse(sessionStorage.getItem('userData'));
             if (!userData) { handleLogout(); return; }
             let content = '';
+
+            const realReferralCount = userData.referralCount || 0; 
+
             switch (pageId) {
                 case 'main-dashboard':
-                    content = `<div class="page active"><div class="menu-grid"><div class="menu-item" onclick="showPage('earn-page')"><i class="fa-solid fa-coins"></i><span>আয় করুন</span></div><div class="menu-item" onclick="showPage('invite-page')"><i class="fa-solid fa-user-group"></i><span>আমন্ত্রণ</span></div><div class="menu-item" onclick="showPage('level-page')"><i class="fa-solid fa-trophy"></i><span>লেভেল</span></div><div class="menu-item" onclick="showPage('history-page')"><i class="fa-solid fa-clock-rotate-left"></i><span>ইতিহাস</span></div><div class="menu-item" onclick="showPage('withdraw-page')"><i class="fa-solid fa-wallet"></i><span>উইথড্র</span></div><div class="menu-item" onclick="showPage('profile-page')"><i class="fa-solid fa-user-gear"></i><span>প্রোফাইল</span></div></div><div class="banner-ad-container"><script type="text/javascript"> atOptions = { 'key' : '7ee9e5282b45582189b2bb9727787088', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} }; <\/script><script type="text/javascript" src="//amuletshaped.com/7ee9e5282b45582189b2bb9727787088/invoke.js"><\/script><div class="banner-ad-note"><i class="fa-solid fa-star"></i> এই বিজ্ঞাপনে ক্লিক করে সাইন-আপ করলে ৳২০ টাকা বোনাস জিতুন!</div></div><div class="payment-history"><h3>সাম্প্রতিক সফল পেমেন্ট</h3><div id="payment-list"></div></div></div>`;
+                    content = `<div class="page active"><div class="menu-grid"><div class="menu-item" onclick="showPage('earn-page')"><i class="fa-solid fa-coins"></i><span>আয় করুন</span></div><div class="menu-item" onclick="showPage('invite-page')"><i class="fa-solid fa-user-group"></i><span>আমন্ত্রণ</span></div><div class="menu-item" onclick="showPage('level-page')"><i class="fa-solid fa-trophy"></i><span>লেভেল</span></div><div class="menu-item" onclick="showPage('history-page')"><i class="fa-solid fa-clock-rotate-left"></i><span>ইতিহাস</span></div><div class="menu-item" onclick="showPage('withdraw-page')"><i class="fa-solid fa-wallet"></i><span>উইথড্র</span></div><div class="menu-item" onclick="showPage('profile-page')"><i class="fa-solid fa-user-gear"></i><span>প্রোফাইল</span></div></div><div class="payment-history"><h3>সাম্প্রতিক সফল পেমেন্ট</h3><div id="payment-list"></div></div></div>`;
                     break;
                 case 'earn-page':
-                    content = `<div class="page active"><div class="page-header"><button class="back-btn" onclick="showPage('main-dashboard')"><i class="fa-solid fa-arrow-left"></i></button><h2>টাস্কসমূহ</h2></div><div class="inner-page-content"><p style="text-align:center;">নিচের টাস্কগুলো সঠিকভাবে সম্পন্ন করে আয় করুন।</p><a href="https://amuletshaped.com/xmy5jz0v?key=4bff42bbba1a2dd0e034d406ae638704" target="_blank" class="task-button" onclick="completeTask(7)"><span><i class="fa-solid fa-play-circle"></i> টাস্ক - ১</span><span class="reward">৳৭</span></a><a href="https://otieu.com/4/9156891" target="_blank" class="task-button" onclick="completeTask(7)"><span><i class="fa-solid fa-play-circle"></i> টাস্ক - ২</span><span class="reward">৳৭</span></a><a href="https://www.profitableratecpm.com/d782hw3h2x?key=c305ebd5910635efc00e199d40655d1e" target="_blank" class="task-button" onclick="completeTask(7)"><span><i class="fa-solid fa-play-circle"></i> টাস্ক - ৩</span><span class="reward">৳৭</span></a><a href="https://www.profitableratecpm.com/xwha8hamt?key=6dc27fb19e8456230c3afa1df390901b" target="_blank" class="task-button" onclick="completeTask(7)"><span><i class="fa-solid fa-play-circle"></i> টাস্ক - ৪</span><span class="reward">৳৭</span></a><a href="https://www.profitableratecpm.com/wxxvvb9ui3?key=bc02c1f3729060e644304dceb4dba3d6" target="_blank" class="task-button" onclick="completeTask(7)"><span><i class="fa-solid fa-play-circle"></i> টাস্ক - ৫</span><span class="reward">৳৭</span></a><div class="task-button special-task" onclick="document.getElementById('task-modal').style.display='flex'"><div><span><i class="fa-solid fa-star"></i> বিশেষ টাস্ক</span><small style="display: block; font-size: 0.8rem; color: #555;">বিজ্ঞাপনে সাইন-আপ করে আয়</small></div><span class="reward">৳২০/সাইন-আপ</span></div></div></div>`;
+                    content = `<div class="page active"><div class="page-header"><button class="back-btn" onclick="showPage('main-dashboard')"><i class="fa-solid fa-arrow-left"></i></button><h2>টাস্কসমূহ</h2></div><div class="inner-page-content"><p style="text-align:center;">নিচের টাস্কগুলো সঠিকভাবে সম্পন্ন করে আয় করুন।</p><a href="https://amuletshaped.com/xmy5jz0v?key=4bff42bbba1a2dd0e034d406ae638704" target="_blank" class="task-button" onclick="completeTask(7)"><span><i class="fa-solid fa-play-circle"></i> টাস্ক - ১</span><span class="reward">৳৭</span></a><a href="https://otieu.com/4/9156891" target="_blank" class="task-button" onclick="completeTask(7)"><span><i class="fa-solid fa-play-circle"></i> টাস্ক - ২</span><span class="reward">৳৭</span></a><a href="https://www.profitableratecpm.com/d782hw3h2x?key=c305ebd5910635efc00e199d40655d1e" target="_blank" class="task-button" onclick="completeTask(7)"><span><i class="fa-solid fa-play-circle"></i> টাস্ক - ৩</span><span class="reward">৳৭</span></a><a href="https://www.profitableratecpm.com/xwha8hamt?key=6dc27fb19e8456230c3afa1df390901b" target="_blank" class="task-button" onclick="completeTask(7)"><span><i class="fa-solid fa-play-circle"></i> টাস্ক - ৪</span><span class="reward">৳৭</span></a><a href="https://www.profitableratecpm.com/wxxvvb9ui3?key=bc02c1f3729060e644304dceb4dba3d6" target="_blank" class="task-button" onclick="completeTask(7)"><span><i class="fa-solid fa-play-circle"></i> টাস্ক - ৫</span><span class="reward">৳৭</span></a></div></div>`;
                     break;
                 case 'invite-page':
                     const referralLink = `${window.location.origin}${window.location.pathname}?ref=${userData.referralId}`;
-                    content = `<div class="page active"><div class="page-header"><button class="back-btn" onclick="showPage('main-dashboard')"><i class="fa-solid fa-arrow-left"></i></button><h2>বন্ধু আমন্ত্রণ</h2></div><div class="inner-page-content"><div class="referral-info-box"><p style="margin:0; font-size:1.1rem;">প্রতি সফল রেফারের জন্য আপনি পাবেন</p><h2>৳৫০</h2></div><div class="referral-stats"><div class="stat-item"><h4>${userData.referralCount || 0}</h4><p>মোট সফল রেফারেল</p></div></div><div class="referral-id-box"><p style="text-align:center; margin:0 0 10px 0; font-weight:500;">আপনার রেফারেল লিংক শেয়ার করুন:</p><div class="input-group" style="display:flex;"><input type="text" value="${referralLink}" readonly onclick="this.select(); document.execCommand('copy'); alert('লিংক কপি করা হয়েছে!');"><button onclick="this.previousElementSibling.select(); document.execCommand('copy'); alert('লিংক কপি করা হয়েছে!');" class="btn-primary" style="width:auto; padding: 0 15px; border-radius: 0 10px 10px 0;">কপি</button></div></div></div></div>`;
+                    content = `<div class="page active"><div class="page-header"><button class="back-btn" onclick="showPage('main-dashboard')"><i class="fa-solid fa-arrow-left"></i></button><h2>বন্ধু আমন্ত্রণ</h2></div><div class="inner-page-content"><div class="referral-info-box"><p style="margin:0; font-size:1.1rem;">প্রতি সফল রেফারের জন্য আপনি পাবেন</p><h2>৳৫০</h2></div><div class="referral-stats"><div class="stat-item"><h4>${realReferralCount}</h4><p>মোট সফল রেফারেল</p></div></div><div class="referral-id-box"><p style="text-align:center; margin:0 0 10px 0; font-weight:500;">আপনার রেফারেল লিংক শেয়ার করুন:</p><div class="input-group" style="display:flex;"><input type="text" value="${referralLink}" readonly onclick="this.select(); document.execCommand('copy'); alert('লিংক কপি করা হয়েছে!');"><button onclick="this.previousElementSibling.select(); document.execCommand('copy'); alert('লিংক কপি করা হয়েছে!');" class="btn-primary" style="width:auto; padding: 0 15px; border-radius: 0 10px 10px 0;">কপি</button></div></div></div></div>`;
                     break;
                 case 'withdraw-page':
-                    content = `<div class="page active"><div class="page-header"><button class="back-btn" onclick="showPage('main-dashboard')"><i class="fa-solid fa-arrow-left"></i></button><h2>টাকা উত্তোলন</h2></div><div class="inner-page-content"><div class="withdraw-rules" style="background:#E3F2FD; border:1px solid #90CAF9; padding:15px; border-radius:10px; margin-bottom:20px;"><h4 style="margin:0 0 10px 0; color:var(--secondary-color);"><i class="fa-solid fa-circle-info"></i> উত্তোলনের শর্তাবলী:</h4><ul style="padding-left:20px; margin:0; font-size: 0.95rem;"><li>ন্যূনতম <b>৳3000.00 টাকা</b> ব্যালেন্স থাকতে হবে।</li><li>কমপক্ষে <b>৩১টি সফল রেফারেল</b> থাকতে হবে। (আপনার আছে: ${userData.referralCount || 0} টি)</li></ul></div><form id="withdraw-form"><div class="input-group"><label>পেমেন্ট মেথড</label><select id="payment-method"><option>বিকাশ</option><option>নগদ</option></select></div><div class="input-group"><label>আপনার পেমেন্ট নম্বর</label><input type="tel" id="payment-number" placeholder="যেমন: 017xxxxxxxx" required></div><div class="input-group"><label>টাকার পরিমাণ</label><input type="number" id="withdraw-amount" placeholder="যেমন: 3000" required></div><button type="submit" class="btn-primary">রিকোয়েস্ট পাঠান</button></form><hr class="separator"><p style="text-align:center; font-weight:500;">অথবা</p><button class="btn-primary" onclick="document.getElementById('withdraw-modal').style.display='flex'" style="background: var(--success-color);"><i class="fa-solid fa-file-lines"></i> গুগল ফর্ম দিয়ে রিকোয়েস্ট পাঠান</button></div></div>`;
+                    content = `<div class="page active"><div class="page-header"><button class="back-btn" onclick="showPage('main-dashboard')"><i class="fa-solid fa-arrow-left"></i></button><h2>টাকা উত্তোলন</h2></div><div class="inner-page-content"><div class="withdraw-rules" style="background:#E3F2FD; border:1px solid #90CAF9; padding:15px; border-radius:10px; margin-bottom:20px;"><h4 style="margin:0 0 10px 0; color:var(--secondary-color);"><i class="fa-solid fa-circle-info"></i> উত্তোলনের শর্তাবলী:</h4><ul style="padding-left:20px; margin:0; font-size: 0.95rem;"><li>ন্যূনতম <b>৳3000.00 টাকা</b> ব্যালেন্স থাকতে হবে।</li><li>কমপক্ষে <b>৩১টি সফল রেফারেল</b> থাকতে হবে। (আপনার আছে: ${realReferralCount} টি)</li></ul></div><form id="withdraw-form"><div class="input-group"><label>পেমেন্ট মেথড</label><select id="payment-method"><option>বিকাশ</option><option>নগদ</option></select></div><div class="input-group"><label>আপনার পেমেন্ট নম্বর</label><input type="tel" id="payment-number" placeholder="যেমন: 017xxxxxxxx" required></div><div class="input-group"><label>টাকার পরিমাণ</label><input type="number" id="withdraw-amount" placeholder="যেমন: 3000" required></div><button type="submit" class="btn-primary">রিকোয়েস্ট পাঠান</button></form><hr class="separator"><p style="text-align:center; font-weight:500;">অথবা</p><button class="btn-primary" onclick="document.getElementById('withdraw-modal').style.display='flex'" style="background: var(--success-color);"><i class="fa-solid fa-file-lines"></i> গুগল ফর্ম দিয়ে রিকোয়েস্ট পাঠান</button></div></div>`;
                     break;
                 case 'profile-page':
-                    content = `<div class="page active"><div class="page-header"><button class="back-btn" onclick="showPage('main-dashboard')"><i class="fa-solid fa-arrow-left"></i></button><h2>প্রোফাইল</h2></div><div class="inner-page-content"><div style="text-align:center; margin-bottom:20px;"><img id="profile-page-pic" src="${localStorage.getItem(`userPhoto_${userData.phone}`) || DEFAULT_AVATAR_URL}" alt="DP" style="width:120px; height:120px; border-radius:50%; border:4px solid var(--primary-color); padding:4px; background:white; margin-bottom:15px;"><label for="upload-photo" class="btn-primary" style="display:inline-block; width:auto; padding:10px 20px; font-size:0.9rem;"><i class="fa-solid fa-camera"></i> ছবি পরিবর্তন</label><input type="file" id="upload-photo" accept="image/*" style="display:none;"></div><hr class="separator"><h4>পাসওয়ার্ড পরিবর্তন করুন</h4><form id="changePasswordForm"><div class="input-group"><label>বর্তমান পাসওয়ার্ড</label><input type="password" id="current-password" required></div><div class="input-group"><label>নতুন পাসওয়ার্ড</label><input type="password" id="new-password" minlength="6" required></div><div class="input-group"><label>নতুন পাসওয়ার্ড নিশ্চিত করুন</label><input type="password" id="confirm-new-password" minlength="6" required></div><button type="submit" class="btn-primary">পরিবর্তন করুন</button></form><hr class="separator"><button onclick="handleLogout()" class="btn-primary" style="background:var(--danger-color); width:100%;"><i class="fa-solid fa-right-from-bracket"></i> লগ-আউট করুন</button></div></div>`;
+                    content = `<div class="page active"><div class="page-header"><button class="back-btn" onclick="showPage('main-dashboard')"><i class="fa-solid fa-arrow-left"></i></button><h2>প্রোফাইল</h2></div><div class="inner-page-content"><div style="text-align:center; margin-bottom:20px;"><img id="profile-page-pic" src="${localStorage.getItem(`userPhoto_${userData.phone}`) || 'https://i.ibb.co/615b2d6/default-avatar.png'}" alt="DP" style="width:120px; height:120px; border-radius:50%; border:4px solid var(--primary-color); padding:4px; background:white; margin-bottom:15px;"><label for="upload-photo" class="btn-primary" style="display:inline-block; width:auto; padding:10px 20px; font-size:0.9rem;"><i class="fa-solid fa-camera"></i> ছবি পরিবর্তন</label><input type="file" id="upload-photo" accept="image/*" style="display:none;"></div><hr class="separator"><h4>পাসওয়ার্ড পরিবর্তন করুন</h4><form id="changePasswordForm"><div class="input-group"><label>বর্তমান পাসওয়ার্ড</label><input type="password" id="current-password" required></div><div class="input-group"><label>নতুন পাসওয়ার্ড</label><input type="password" id="new-password" minlength="6" required></div><div class="input-group"><label>নতুন পাসওয়ার্ড নিশ্চিত করুন</label><input type="password" id="confirm-new-password" minlength="6" required></div><button type="submit" class="btn-primary">পরিবর্তন করুন</button></form><hr class="separator"><button onclick="handleLogout()" class="btn-primary" style="background:var(--danger-color); width:100%;"><i class="fa-solid fa-right-from-bracket"></i> লগ-আউট করুন</button></div></div>`;
                     break;
                 case 'level-page':
                     content = `<div class="page active"><div class="page-header"><button class="back-btn" onclick="showPage('main-dashboard')"><i class="fa-solid fa-arrow-left"></i></button><h2>লেভেল</h2></div><div class="inner-page-content">${generateLevelContent(userData)}</div></div>`;
@@ -382,15 +392,6 @@
                 document.getElementById('withdraw-form').addEventListener('submit', handleWithdrawRequest);
             } else if (pageId === 'main-dashboard') {
                 generatePaymentHistory();
-                const adContainer = document.querySelector('.banner-ad-container');
-                if (adContainer) {
-                    adContainer.querySelectorAll('script').forEach(oldScript => {
-                        const newScript = document.createElement('script');
-                        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                        newScript.innerHTML = oldScript.innerHTML;
-                        oldScript.parentNode.replaceChild(newScript, oldScript);
-                    });
-                }
             } else if (pageId === 'history-page') {
                 loadHistoryContent();
             }
@@ -426,11 +427,6 @@
         function completeTask(amount) {
             alert(`টাস্ক সম্পন্ন করার জন্য ধন্যবাদ। অ্যাডটি পুরোপুরি দেখার পর আপনার অ্যাকাউন্টে ৳${amount} যোগ হবে।`);
             setTimeout(() => { updateBalance(amount); }, 8000);
-        }
-
-        function handleSpecialSignup() {
-            document.getElementById('task-modal').style.display = 'none';
-            Math.random() < 0.15 ? updateBalance(20) : alert('দুঃখিত, আপনার সাইন-আপটি সফল হিসেবে যাচাই করা যায়নি। দয়া করে সঠিকভাবে সাইন-আপ করার পর আবার চেষ্টা করুন।');
         }
 
         function handlePhotoUpload(event) {
@@ -493,15 +489,16 @@
             if (!userData) return;
             document.getElementById('user-name-display').innerText = userData.name;
             document.getElementById('main-balance').innerText = `৳ ${parseFloat(userData.balance || 0).toFixed(2)}`;
-            const photoSrc = localStorage.getItem(`userPhoto_${userData.phone}`) || DEFAULT_AVATAR_URL;
+            const photoSrc = localStorage.getItem(`userPhoto_${userData.phone}`) || 'https://i.ibb.co/615b2d6/default-avatar.png';
             document.getElementById('header-profile-pic').src = photoSrc;
             if(document.getElementById('profile-page-pic')) {
                 document.getElementById('profile-page-pic').src = photoSrc;
             }
         }
     </script>
+    
+    <!-- Social Bar Ad Code -->
+    <script type='text/javascript' src='//amuletshaped.com/9b/65/68/9b6568504e9ac68783222e96f73d0fb1.js'></script>
+
 </body>
 </html>
-<!-- ================================================================= -->
-<!-- শেষ: চূড়ান্ত এবং নির্ভুল HTML Code -->
-<!-- ================================================================= -->
