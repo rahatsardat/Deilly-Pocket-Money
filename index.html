@@ -43,7 +43,8 @@
         .menu-item span { display: block; font-weight: 600; font-size: 1rem; }
         .payment-history { margin-top: 30px; }
         .payment-history h3 { margin-bottom: 15px; font-size: 1.2rem; }
-        .payment-list-item { display: flex; justify-content: space-between; align-items: center; background: var(--white-color); padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .payment-list-item { display: flex; justify-content: space-between; align-items: center; background: var(--white-color); padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); animation: fadeInItem 0.6s ease-out; }
+        @keyframes fadeInItem { from { opacity: 0; transform: translateX(-15px); } to { opacity: 1; transform: translateX(0); } }
         .page { animation: fadeIn 0.5s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .page-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
@@ -87,6 +88,19 @@
         .withdraw-history th, .withdraw-history td { padding: 12px 8px; border: 1px solid #ddd; text-align: center; font-size: 0.9rem;}
         .withdraw-history th { background-color: #f2f2f2; }
         hr.separator { margin: 25px 0; border: 0; border-top: 1px solid #eee; }
+        
+        .history-tabs { display: flex; border-bottom: 2px solid #eee; margin-bottom: 20px; overflow-x: auto; }
+        .tab-btn { background: none; border: none; padding: 12px 18px; font-size: 0.95rem; font-weight: 600; cursor: pointer; color: #546E7A; position: relative; transition: color 0.3s; font-family: var(--font-family); white-space: nowrap; }
+        .tab-btn::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 2px; background: var(--primary-color); transform: scaleX(0); transition: transform 0.3s ease; }
+        .tab-btn.active { color: var(--primary-color); }
+        .tab-btn.active::after { transform: scaleX(1); }
+        .history-panel { display: none; animation: fadeIn 0.4s; }
+        .history-panel.active { display: block; }
+        .income-history-item { display: flex; justify-content: space-between; align-items: center; background: #fafafa; padding: 12px 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid var(--accent-color); }
+        .income-history-item .details span { display: block; }
+        .income-history-item .details .description { font-weight: 600; }
+        .income-history-item .details .date { font-size: 0.85rem; color: #78909C; }
+        .income-history-item .amount { font-weight: 700; font-size: 1.1rem; color: var(--success-color); }
     </style>
 </head>
 <body>
@@ -154,7 +168,7 @@
     </div>
 
     <script>
-        // <<<--- আপনার নতুন Web App URL টি এখানে যুক্ত করা হয়েছে ---<<<
+        // <<<--- আপনার Web App URL ---<<<
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwrYegZBt7BTkBGCELK2l17Ljk0NbL-L1NUkiAiSQOg-fif2E9ZXKR9mFgskU3h0KqRzA/exec';
         
         const LEVELS = [
@@ -162,6 +176,8 @@
             { req: 10, bonus: 66 }, { req: 14, bonus: 97 }, { req: 31, bonus: 250 },
             { req: 500, bonus: 10000 }
         ];
+        
+        let paymentHistoryInterval = null;
 
         document.addEventListener('DOMContentLoaded', initializeApp);
 
@@ -232,8 +248,13 @@
         }
 
         async function showPage(pageId) {
+            if (paymentHistoryInterval) {
+                clearInterval(paymentHistoryInterval);
+                paymentHistoryInterval = null;
+            }
+
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            let mainNavPage = ['earn-page', 'withdraw-page', 'profile-page'].includes(pageId) ? pageId : 'main-dashboard';
+            let mainNavPage = ['earn-page', 'withdraw-page', 'profile-page', 'history-page'].includes(pageId) ? pageId : 'main-dashboard';
             const activeLink = document.querySelector(`.nav-link[data-page='${mainNavPage}']`);
             if (activeLink) activeLink.classList.add('active');
             
@@ -305,8 +326,38 @@
             showPage('main-dashboard');
             if (sessionStorage.getItem('isNewUser') === 'true') {
                 alert(`অভিনন্দন, ${userData.name}! \nআপনার অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে এবং আপনি ৳52.00 ওয়েলকাম বোনাস পেয়েছেন।`);
+                // নতুন ব্যবহারকারীকে ওয়েলকাম বোনাসের জন্য লেনদেন রেকর্ড করা হচ্ছে
+                recordTransaction(52, 'Welcome Bonus');
                 sessionStorage.removeItem('isNewUser');
             }
+        }
+        
+        // <<-- নতুন ফাংশন: আয়ের তথ্য লোকাল স্টোরেজে সংরক্ষণ করার জন্য -->>
+        async function recordTransaction(amount, description) {
+            const phone = sessionStorage.getItem('loggedInUser');
+            if (!phone) return;
+
+            // 1. সার্ভারে ব্যালেন্স আপডেট করা
+            const response = await apiCall('updateBalance', { phone, amount });
+            if (response.status !== 'success') {
+                alert('ব্যালেন্স আপডেট করতে সমস্যা হয়েছে।');
+                return;
+            }
+
+            // 2. লোকাল স্টোরেজে লেনদেনের ইতিহাস সংরক্ষণ করা
+            const transaction = {
+                amount,
+                description,
+                timestamp: new Date().toISOString()
+            };
+            const historyKey = `incomeHistory_${phone}`;
+            let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+            history.unshift(transaction); // নতুন লেনদেন শুরুতে যোগ করা
+            localStorage.setItem(historyKey, JSON.stringify(history));
+
+            // 3. UI আপডেট করা
+            await refreshUserData();
+            alert(`অভিনন্দন! আপনার ব্যালেন্সে ৳${amount.toFixed(2)} যোগ করা হয়েছে।`);
         }
         
         function populatePageContent(pageId) {
@@ -319,10 +370,23 @@
 
             switch (pageId) {
                 case 'main-dashboard':
-                    content = `<div class="page active"><div class="menu-grid"><div class="menu-item" onclick="showPage('earn-page')"><i class="fa-solid fa-coins"></i><span>আয় করুন</span></div><div class="menu-item" onclick="showPage('invite-page')"><i class="fa-solid fa-user-group"></i><span>আমন্ত্রণ</span></div><div class="menu-item" onclick="showPage('level-page')"><i class="fa-solid fa-trophy"></i><span>লেভেল</span></div><div class="menu-item" onclick="showPage('history-page')"><i class="fa-solid fa-clock-rotate-left"></i><span>ইতিহাস</span></div><div class="menu-item" onclick="showPage('withdraw-page')"><i class="fa-solid fa-wallet"></i><span>উইথড্র</span></div><div class="menu-item" onclick="showPage('profile-page')"><i class="fa-solid fa-user-gear"></i><span>প্রোফাইল</span></div></div><div class="payment-history"><h3>সাম্প্রতিক সফল পেমেন্ট</h3><div id="payment-list"></div></div></div>`;
+                    content = `<div class="page active"><div class="menu-grid"><div class="menu-item" onclick="showPage('earn-page')"><i class="fa-solid fa-coins"></i><span>আয় করুন</span></div><div class="menu-item" onclick="showPage('invite-page')"><i class="fa-solid fa-user-group"></i><span>আমন্ত্রণ</span></div><div class="menu-item" onclick="showPage('level-page')"><i class="fa-solid fa-trophy"></i><span>লেভেল</span></div><div class="menu-item" onclick="showPage('history-page')"><i class="fa-solid fa-clock-rotate-left"></i><span>ইতিহাস</span></div><div class="menu-item" onclick="showPage('withdraw-page')"><i class="fa-solid fa-wallet"></i><span>উইথড্র</span></div><div class="menu-item" onclick="showPage('profile-page')"><i class="fa-solid fa-user-gear"></i><span>প্রোফাইল</span></div></div><div class="payment-history"><h3>Recent Payments</h3><div id="payment-list"></div></div></div>`;
                     break;
                 case 'earn-page':
-                    content = `<div class="page active"><div class="page-header"><button class="back-btn" onclick="showPage('main-dashboard')"><i class="fa-solid fa-arrow-left"></i></button><h2>টাস্কসমূহ</h2></div><div class="inner-page-content"><p style="text-align:center;">নিচের টাস্কগুলো সঠিকভাবে সম্পন্ন করে আয় করুন।</p><a href="https://amuletshaped.com/xmy5jz0v?key=4bff42bbba1a2dd0e034d406ae638704" target="_blank" class="task-button" onclick="completeTask(7)"><span><i class="fa-solid fa-play-circle"></i> টাস্ক - ১</span><span class="reward">৳৭</span></a><a href="https://otieu.com/4/9156891" target="_blank" class="task-button" onclick="completeTask(7)"><span><i class="fa-solid fa-play-circle"></i> টাস্ক - ২</span><span class="reward">৳৭</span></a><a href="https://www.profitableratecpm.com/d782hw3h2x?key=c305ebd5910635efc00e199d40655d1e" target="_blank" class="task-button" onclick="completeTask(7)"><span><i class="fa-solid fa-play-circle"></i> টাস্ক - ৩</span><span class="reward">৳৭</span></a><a href="https://www.profitableratecpm.com/xwha8hamt?key=6dc27fb19e8456230c3afa1df390901b" target="_blank" class="task-button" onclick="completeTask(7)"><span><i class="fa-solid fa-play-circle"></i> টাস্ক - ৪</span><span class="reward">৳৭</span></a><a href="https://www.profitableratecpm.com/wxxvvb9ui3?key=bc02c1f3729060e644304dceb4dba3d6" target="_blank" class="task-button" onclick="completeTask(7)"><span><i class="fa-solid fa-play-circle"></i> টাস্ক - ৫</span><span class="reward">৳৭</span></a></div></div>`;
+                    content = `<div class="page active"><div class="page-header"><button class="back-btn" onclick="showPage('main-dashboard')"><i class="fa-solid fa-arrow-left"></i></button><h2>টাস্কসমূহ</h2></div><div class="inner-page-content">
+                    <div style="background:#FFFBEB; border:1px solid #FFCA28; padding:15px; border-radius:10px; margin-bottom:25px; color: #4E342E; font-size: 0.95rem; text-align: left;">
+                        <h4 style="margin:0 0 10px 0; color:#EF6C00; font-size: 1.1rem;"><i class="fa-solid fa-triangle-exclamation"></i>  গুরুত্বপূর্ণ বিজ্ঞপ্তি</h4>
+                        <p style="margin:0; line-height:1.6;">
+                            প্রতিটি টাস্কে ক্লিক করার পরে যদি কোনো গেম বা অন্য কোনো ওয়েবসাইটে সাইনআপ/রেজিস্ট্রেশন ফর্ম আসে, তাহলে তাতে সফলভাবে সাইনআপ করতে হবে। <strong>সঠিকভাবে সাইনআপ না করলে আপনার অ্যাকাউন্টে টাকা যোগ হলেও, পেমেন্ট করার সময় তা বাতিল হতে পারে।</strong> মনোযোগ দিয়ে কাজ করার জন্য ধন্যবাদ।
+                        </p>
+                    </div>
+                    <p style="text-align:center;">নিচের টাস্কগুলো সঠিকভাবে সম্পন্ন করে আয় করুন।</p>
+                    <a href="https://amuletshaped.com/xmy5jz0v?key=4bff42bbba1a2dd0e034d406ae638704" target="_blank" class="task-button" onclick="completeTask(7, 'Task 1')"><span><i class="fa-solid fa-play-circle"></i> টাস্ক - ১</span><span class="reward">৳৭</span></a>
+                    <a href="https://otieu.com/4/9156891" target="_blank" class="task-button" onclick="completeTask(7, 'Task 2')"><span><i class="fa-solid fa-play-circle"></i> টাস্ক - ২</span><span class="reward">৳৭</span></a>
+                    <a href="https://www.profitableratecpm.com/d782hw3h2x?key=c305ebd5910635efc00e199d40655d1e" target="_blank" class="task-button" onclick="completeTask(7, 'Task 3')"><span><i class="fa-solid fa-play-circle"></i> টাস্ক - ৩</span><span class="reward">৳৭</span></a>
+                    <a href="https://www.profitableratecpm.com/xwha8hamt?key=6dc27fb19e8456230c3afa1df390901b" target="_blank" class="task-button" onclick="completeTask(7, 'Task 4')"><span><i class="fa-solid fa-play-circle"></i> টাস্ক - ৪</span><span class="reward">৳৭</span></a>
+                    <a href="https://www.profitableratecpm.com/wxxvvb9ui3?key=bc02c1f3729060e644304dceb4dba3d6" target="_blank" class="task-button" onclick="completeTask(7, 'Task 5')"><span><i class="fa-solid fa-play-circle"></i> টাস্ক - ৫</span><span class="reward">৳৭</span></a>
+                    </div></div>`;
                     break;
                 case 'invite-page':
                     const referralLink = `${window.location.origin}${window.location.pathname}?ref=${userData.referralId}`;
@@ -338,7 +402,18 @@
                     content = `<div class="page active"><div class="page-header"><button class="back-btn" onclick="showPage('main-dashboard')"><i class="fa-solid fa-arrow-left"></i></button><h2>লেভেল</h2></div><div class="inner-page-content">${generateLevelContent(userData)}</div></div>`;
                     break;
                 case 'history-page':
-                    content = `<div class="page active"><div class="page-header"><button class="back-btn" onclick="showPage('main-dashboard')"><i class="fa-solid fa-arrow-left"></i></button><h2>ইতিহাস</h2></div><div class="inner-page-content" id="history-content-area"><p>লোড হচ্ছে...</p></div></div>`;
+                    content = `<div class="page active"><div class="page-header"><button class="back-btn" onclick="showPage('main-dashboard')"><i class="fa-solid fa-arrow-left"></i></button><h2>আয়ের ইতিহাস</h2></div><div class="inner-page-content">
+                        <div class="history-tabs">
+                            <button class="tab-btn active" data-target="daily-history">দৈনিক</button>
+                            <button class="tab-btn" data-target="weekly-history">সাপ্তাহিক</button>
+                            <button class="tab-btn" data-target="monthly-history">মাসিক</button>
+                            <button class="tab-btn" data-target="withdraw-history-panel">উত্তোলন</button>
+                        </div>
+                        <div id="daily-history" class="history-panel active"></div>
+                        <div id="weekly-history" class="history-panel"></div>
+                        <div id="monthly-history" class="history-panel"></div>
+                        <div id="withdraw-history-panel" class="history-panel"></div>
+                    </div></div>`;
                     break;
                 default: content = `<div class="page active"><h2>পেজটি খুঁজে পাওয়া যায়নি</h2></div>`;
             }
@@ -366,21 +441,71 @@
             return levelHtml;
         }
 
-        async function loadHistoryContent() {
-            const historyArea = document.getElementById('history-content-area');
-            if (!historyArea) return;
-            historyArea.innerHTML = '<p>ইতিহাস লোড হচ্ছে...</p>';
+        async function loadWithdrawHistory() {
+            const historyPanel = document.getElementById('withdraw-history-panel');
+            if (!historyPanel) return;
+            historyPanel.innerHTML = '<p>উত্তোলনের ইতিহাস লোড হচ্ছে...</p>';
             const response = await apiCall('getHistory', { phone: JSON.parse(sessionStorage.getItem('userData')).phone });
             if (response.status === 'success') {
-                let tableHtml = '<h3>উত্তোলনের ইতিহাস</h3><div class="withdraw-history"><table><thead><tr><th>তারিখ</th><th>টাকা</th><th>স্ট্যাটাস</th></tr></thead><tbody>';
+                let tableHtml = '<div class="withdraw-history"><table><thead><tr><th>তারিখ</th><th>টাকা</th><th>স্ট্যাটাস</th></tr></thead><tbody>';
                 if (response.history.length === 0) {
                     tableHtml += '<tr><td colspan="3">আপনি এখনো কোনো টাকা তোলেননি।</td></tr>';
                 } else {
                     response.history.forEach(item => { tableHtml += `<tr><td>${item.date}</td><td>৳${item.amount}</td><td style="color:${item.status === 'Pending' ? '#f59e0b' : '#28a745'}; font-weight:bold;">${item.status}</td></tr>`; });
                 }
                 tableHtml += '</tbody></table></div>';
-                historyArea.innerHTML = tableHtml;
-            } else { historyArea.innerHTML = '<p>ইতিহাস লোড করা সম্ভব হয়নি।</p>'; }
+                historyPanel.innerHTML = tableHtml;
+            } else { historyPanel.innerHTML = '<p>ইতিহাস লোড করা সম্ভব হয়নি।</p>'; }
+        }
+        
+        // <<-- আসল আয়ের ইতিহাস দেখানোর জন্য নতুন ফাংশন -->>
+        function displayRealIncomeHistory(period, containerId) {
+            const container = document.getElementById(containerId);
+            const phone = sessionStorage.getItem('loggedInUser');
+            if (!container || !phone) return;
+
+            const historyKey = `incomeHistory_${phone}`;
+            const allHistory = JSON.parse(localStorage.getItem(historyKey)) || [];
+            
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            const filteredHistory = allHistory.filter(item => {
+                const itemDate = new Date(item.timestamp);
+                if (period === 'daily') {
+                    return itemDate >= today;
+                }
+                if (period === 'weekly') {
+                    const oneWeekAgo = new Date(today);
+                    oneWeekAgo.setDate(today.getDate() - 7);
+                    return itemDate >= oneWeekAgo;
+                }
+                if (period === 'monthly') {
+                    const oneMonthAgo = new Date(today);
+                    oneMonthAgo.setMonth(today.getMonth() - 1);
+                    return itemDate >= oneMonthAgo;
+                }
+                return false;
+            });
+
+            if (filteredHistory.length === 0) {
+                container.innerHTML = '<p style="text-align:center; padding: 20px 0;">এই সময়ের মধ্যে কোনো আয় পাওয়া যায়নি।</p>';
+                return;
+            }
+
+            let html = '';
+            filteredHistory.forEach(item => {
+                const date = new Date(item.timestamp);
+                const formattedDate = date.toLocaleString('bn-BD', { day: 'numeric', month: 'long', hour: 'numeric', minute: 'numeric', hour12: true });
+                html += `<div class="income-history-item">
+                            <div class="details">
+                                <span class="description">${item.description}</span>
+                                <span class="date">${formattedDate}</span>
+                            </div>
+                            <span class="amount">+ ৳${item.amount.toFixed(2)}</span>
+                         </div>`;
+            });
+            container.innerHTML = html;
         }
 
         function attachDynamicListeners(pageId) {
@@ -392,41 +517,58 @@
                 document.getElementById('withdraw-form').addEventListener('submit', handleWithdrawRequest);
             } else if (pageId === 'main-dashboard') {
                 generatePaymentHistory();
+                paymentHistoryInterval = setInterval(generatePaymentHistory, 7000);
             } else if (pageId === 'history-page') {
-                loadHistoryContent();
+                document.querySelectorAll('.tab-btn').forEach(button => {
+                    button.addEventListener('click', () => {
+                        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                        document.querySelectorAll('.history-panel').forEach(panel => panel.classList.remove('active'));
+                        button.classList.add('active');
+                        document.getElementById(button.dataset.target).classList.add('active');
+                    });
+                });
+                displayRealIncomeHistory('daily', 'daily-history');
+                displayRealIncomeHistory('weekly', 'weekly-history');
+                displayRealIncomeHistory('monthly', 'monthly-history');
+                loadWithdrawHistory();
             }
         }
         
         function generatePaymentHistory() {
-            const names = ["রহিম", "করিম", "আরিফ", "সুমন", "রাকিব", "নাসরিন", "ফারিয়া", "সাকিব", "মিজান", "আকাশ"];
+            const names = ["Rahim", "Karim", "Mizan", "Sumaiya", "Akash", "Fatima", "Jamal", "Sultana", "Riad", "Kamal", "Rina", "Shihab", "Nadia", "Firoz", "Tanha"];
+            
             const listElement = document.getElementById('payment-list');
             if (!listElement) return;
+
+            let shuffledNames = [...names];
+            for (let i = shuffledNames.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledNames[i], shuffledNames[j]] = [shuffledNames[j], shuffledNames[i]];
+            }
+
+            const uniqueNamesToShow = shuffledNames.slice(0, 8);
+            
             listElement.innerHTML = '';
-            for (let i = 0; i < 8; i++) {
-                const name = names[Math.floor(Math.random() * names.length)];
+
+            uniqueNamesToShow.forEach(name => {
                 const amount = Math.floor(Math.random() * 2001) + 3000;
                 const item = document.createElement('div');
                 item.className = 'payment-list-item';
-                item.innerHTML = `<div style="display:flex; align-items:center; gap:10px;"><i class="fas fa-check-circle" style="color:var(--success-color);"></i><span><b>${name}</b> পেমেন্ট পেয়েছেন</span></div><span style="font-weight:bold; color:var(--primary-color);">৳ ${amount.toLocaleString('bn-BD')}</span>`;
+                item.innerHTML = `<div style="display:flex; align-items:center; gap:10px;"><i class="fas fa-check-circle" style="color:var(--success-color);"></i><span><b>${name}</b> received payment</span></div><span style="font-weight:bold; color:var(--primary-color);">৳ ${amount.toLocaleString('bn-BD')}</span>`;
                 listElement.appendChild(item);
-            }
+            });
         }
 
         function attachNavListeners() {
             document.querySelectorAll('.nav-link').forEach(link => { link.addEventListener('click', (e) => { e.preventDefault(); showPage(link.dataset.page); }); });
         }
         
-        async function updateBalance(amount) {
-            const response = await apiCall('updateBalance', { phone: JSON.parse(sessionStorage.getItem('userData')).phone, amount: amount });
-            if (response.status === 'success') {
-                await refreshUserData();
-                alert(`অভিনন্দন! আপনার ব্যালেন্সে ৳${amount.toFixed(2)} যোগ করা হয়েছে।`);
-            } else { alert('ব্যালেন্স আপডেট করতে সমস্যা হয়েছে।'); }
-        }
-        
-        function completeTask(amount) {
-            alert(`টাস্ক সম্পন্ন করার জন্য ধন্যবাদ। অ্যাডটি পুরোপুরি দেখার পর আপনার অ্যাকাউন্টে ৳${amount} যোগ হবে।`);
-            setTimeout(() => { updateBalance(amount); }, 8000);
+        // <<-- এই ফাংশনটি এখন recordTransaction ফাংশনকে কল করবে -->>
+        function completeTask(amount, taskName) {
+            alert(`টাস্ক সম্পন্ন করার জন্য ধন্যবাদ। অ্যাডটি পুরোপুরি দেখার পর আপনার অ্যাকাউন্টে টাকা যোগ হবে।`);
+            setTimeout(() => {
+                recordTransaction(amount, `Task Completion: ${taskName}`);
+            }, 8000);
         }
 
         function handlePhotoUpload(event) {
@@ -480,8 +622,11 @@
         }
 
         function handleLogout() {
+            // শুধুমাত্র sessionStorage ক্লিয়ার করা হচ্ছে, ताकि localStorage-এ থাকা ইতিহাস মুছে না যায়
             sessionStorage.clear();
-            localStorage.clear();
+            if (paymentHistoryInterval) {
+                clearInterval(paymentHistoryInterval);
+            }
             window.location.reload();
         }
 
